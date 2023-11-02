@@ -1,83 +1,79 @@
-%% D-sek regulatory documentclass
+%%% Document clas for regulatory documents for the D-guild
 
-%% Class identification
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{dsekregdoc}[2022/10/06]
 
 \RequirePackage{expl3}
 
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{dsekdoc}}
+\ExplSyntaxOn
+
+%%% Package options
+
+%% Different inflection of type of regulatory document
+\str_const:Nn \c_dsek_reg_doc_t_infl_str { t }
+\str_const:Nn \c_dsek_reg_doc_n_infl_str { n }
+\str_const:Nn \c_dsek_reg_doc_plural_infl_str { plural }
+
+\str_new:N \g_dsek_reg_doc_infl_str
+% default to n-inflection
+\str_set_eq:NN \g_dsek_reg_doc_infl_str \c_dsek_reg_doc_n_infl_str
+
+%% Declare options for inflection of type of regulatory document
+\DeclareOption{n}
+   {\str_set_eq:NN \g_dsek_reg_doc_infl_str \c_dsek_reg_doc_n_infl_str}
+\DeclareOption{t}
+   {\str_set_eq:NN \g_dsek_reg_doc_infl_str \c_dsek_reg_doc_t_infl_str}
+\DeclareOption{plural}
+   {\str_set_eq:NN \g_dsek_reg_doc_infl_str \c_dsek_reg_doc_plural_infl_str}
+
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{dsekparagraphed}}
 
 \ProcessOptions \relax
 
-\LoadClass{dsekdoc}
+\LoadClass{dsekparagraphed}
 
-\ExplSyntaxOn
+%%% Set header values
+%% When the document was last revised
+\tl_new:N \g_dsek_revised_on_tl
 
-% This is the width for the § labels
-\dim_new:N \g_dsek_regp_label_dim
-\dim_set:Nn \g_dsek_regp_label_dim {40mm}
+% Different inflections of "revised"
+\tl_new:N \g_dsek_revised_term_tl
 
-% This is the width for the § numbers
-\dim_new:N \g_dsek_regp_num_dim
-\dim_set:Nn \g_dsek_regp_num_dim {4em}
+\tl_set:Nn \g_dsek_revised_term_tl { reviderad }
+\str_if_eq:NNT \g_dsek_reg_doc_infl_str \c_dsek_reg_doc_t_infl_str
+    {\tl_set:Nn \g_dsek_revised_term_tl { reviderat }}
+\str_if_eq:NNT \g_dsek_reg_doc_infl_str \c_dsek_reg_doc_plural_infl_str
+    {\tl_set:Nn \g_dsek_revised_term_tl { reviderade }}
 
-% This is the width of the separation between the § and the content
-\dim_new:N \g_dsek_regp_col_sep_dim
-\dim_set:Nn \g_dsek_regp_col_sep_dim {1em}
-
-% This is the width of the § column in full.  It is calculated from the
-% previous numbers.
-\dim_new:N \g__dsek_regp_col_dim
-\dim_set:Nn \g__dsek_regp_col_dim \g_dsek_regp_label_dim
-\dim_add:Nn \g__dsek_regp_col_dim \g_dsek_regp_num_dim
-
-% Number of the § paragraph
-\newcounter{DsekRegParagraph}
-
-% Format for the § number
-\tl_new:N \g_dsek_regp_num_format_tl
-\tl_set:Nn \g_dsek_regp_num_format_tl {§\arabic{section} . \arabic{DsekRegParagraph}}
-
-\NewDocumentCommand{\setregpnumformat}{ m }{
-  \tl_gset:Nn \g_dsek_regp_num_format_tl { #1 }
+\NewDocumentCommand{\setrevisedon}{ m }{
+  \tl_gset:Nn \g_dsek_revised_on_tl
+     {Senast~{\tl_use:N \g_dsek_revised_term_tl}~#1 }
 }
 
-\NewDocumentEnvironment{regsection}{}{
-  \setcounter{DsekRegParagraph}{0}
+\setrevisedon{HTMX 20XX} % set a default value
+\tl_set:Nn \g_dsek_date_tl {\tl_use:N \g_dsek_revised_on_tl} % Add to header
 
-  \begin{description}[
-      align=parleft,
-      labelindent=0mm,
-      labelsep=\g_dsek_regp_col_sep_dim,
-      leftmargin=\g__dsek_regp_col_dim + \g_dsek_regp_col_sep_dim,
-      labelwidth=\g__dsek_regp_col_dim,
-      itemindent=0mm,
-      font=\normalfont]
-}{
-  \end{description}
+%% When the document was adopted
+\tl_new:N \g_dsek_adopted_on_tl
+
+% Different inflections of "adopted"
+\tl_new:N \g_dsek_adopted_term_tl
+
+\tl_set:Nn \g_dsek_adopted_term_tl { Antagen }
+\str_if_eq:NNT \g_dsek_reg_doc_infl_str \c_dsek_reg_doc_t_infl_str
+    {\tl_set:Nn \g_dsek_adopted_term_tl { Antaget }}
+\str_if_eq:NNT \g_dsek_reg_doc_infl_str \c_dsek_reg_doc_plural_infl_str
+    {\tl_set:Nn \g_dsek_adopted_term_tl { Antagna }}
+
+\NewDocumentCommand{\setadoptedon}{ m }{
+  \tl_gset:Nn \g_dsek_adopted_on_tl {{\tl_use:N \g_dsek_adopted_term_tl}~#1 }
 }
 
-% This command creates a § label from a given number and label
-\cs_new_protected:Npn \__dsek_regp_label:nn #1#2 {
-  \makebox[\g_dsek_regp_num_dim][l]{\hypertarget{par:#1}{#1}}
-  \parbox[t]{\g_dsek_regp_label_dim}{#2}
-}
+\setadoptedon{\textsf{HTMX 20xx}} % set a default value
+\tl_set:Nn \g_dsek_meeting_tl {\tl_use:N \g_dsek_adopted_on_tl} % Add to header
 
-% This is a user facing command that takes the number and name of a § and
-% creates an entry in a surrounding `regsection` for it.
-
-\NewDocumentCommand \regitem { o m } {
-  \IfValueTF{#1} {
-    \item[\__dsek_regp_label:nn{#1}{#2}]
-  } {
-    \stepcounter{DsekRegParagraph}
-    \item[\__dsek_regp_label:nn{\tl_use:N \g_dsek_regp_num_format_tl}{#2} ]
-  }
-}
-
-% This sets the format for \sections.
-\titleformat{\section}{\sffamily\LARGE\bfseries}{\thesection.}{0.5em}{\LARGE}
-\titlespacing*{\section}{0mm}{0mm}{2.5mm}
+% Set author.  Since no regulatory document has a single author, set the guild
+% as the author of all regulatory documents.
+\setauthor{D-sektionen~inom~TLTH}
 
 \ExplSyntaxOff

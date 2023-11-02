@@ -1,5 +1,5 @@
 \input{regression-test.tex}
-\documentclass{dsekregdoc}
+\documentclass{dsekparagraphed}
 
 \usepackage{expl3}
 \START
@@ -12,14 +12,14 @@
 \setdate{\today}
 
 
-\title{\textsf{dsekregdoc}-test}
+\title{\textsf{dsekparagraphed}-test}
 \author{Trula Trulsson}
 
 \begin{document}
 
 \section{Kapitel ett av dokumentet}
-\begin{regsection}
-  \regitem{Första paragrafen}
+\begin{parasection}
+  \paraitem{Första paragrafen}
   \lipsum[1]
 
   Mötet beslutade
@@ -28,7 +28,7 @@
   \item \lipsum[4][2]
   \end{attlist}
 
-  \regitem{Andra paragrafen}
+  \paraitem{Andra paragrafen}
   \lipsum[2]
 
   Mötet beslutade
@@ -38,7 +38,7 @@
 
   \end{attlist}
 
-  \regitem{En paragraf med en massa små ord i sitt namn så att vi måste få
+  \paraitem{En paragraf med en massa små ord i sitt namn så att vi måste få
     line breaks}
   \lipsum[3]
 
@@ -50,17 +50,17 @@
     \end{attlist}
   \end{samepage}
 
-\end{regsection}
+\end{parasection}
 
-\setregpnumformat{§\arabic{section}.\arabic{DsekRegParagraph}.}
+\setparanumformat{§\arabic{section}.\arabic{DsekParagraph}.}
 
 \section{Kapitel två av dokumentet}
-\begin{regsection}
-  \regitem{Paragraf 1 av kapitel 2}
+\begin{parasection}
+  \paraitem{Paragraf 1 av kapitel 2}
   \lipsum[5-6]
-  \regitem[Spec.]{Paragraf med särskilt ``nummer''}
+  \paraitem[Spec.]{Paragraf med särskilt ``nummer''}
   \lipsum[7-8]
-\end{regsection}
+\end{parasection}
 
 \section{Kapitel tre av dokumentet}
 \lipsum[9-10]
